@@ -60,18 +60,18 @@ import java.util.List;
             // TODO: fill in these values based on
             //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
             public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                    RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                    RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
             public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                    RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
             // drive model parameters
-            public double inPerTick = 0.002963;
-            public double lateralInPerTick = 0.002120667110796818;
-            public double trackWidthTicks = 92.95906102966036;
+            public double inPerTick = 0.002974;
+            public double lateralInPerTick = 0.002185541991174969;
+            public double trackWidthTicks = 76.30568594296177; //change this
 
             // feedforward parameters (in tick units)
-            public double kS = 1.128252730332393;
-            public double kV = 0.0007123152430408214;
+            public double kS = 2.1823200480292853;
+            public double kV = 0.0005765520621948366;
             public double kA = 0;
 
             // path profile parameters (in inches)
