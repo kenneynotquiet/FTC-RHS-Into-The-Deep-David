@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.util.Base64;
+
 @TeleOp
 public class FieldCentricMecanumTeleOp extends LinearOpMode {
     @Override
@@ -18,7 +20,8 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("leftBack");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("rightBack");
-        DcMotor ArmMotor = hardwareMap.dcMotor.get("ArmMotor");
+        DcMotor armMotor = hardwareMap.dcMotor.get("armMotor");
+
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
@@ -31,8 +34,8 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT));
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
@@ -50,14 +53,13 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             // The equivalent button is start on Xbox-style controllers.
 
             if (gamepad1.b) {
-                ArmMotor.setPower(-1);
+                armMotor.setPower(-1);
+            } else if (gamepad1.y) {
+                armMotor.setPower(1);
+            } else {
+                armMotor.setPower(0);
             }
-           ArmMotor.setPower(0);
 
-            if (gamepad1.y) {
-                ArmMotor.setPower(1);
-            }
-            ArmMotor.setPower(0);
 
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
@@ -81,5 +83,19 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
         }
+
+//        public void FieldCentricMecanumTeleOp(int turnage){
+//            newTarget = ticks/turnage;
+//            armEncoder.setTargetPosition((int)newTarget);
+//            armEncoder.setPower(0.3);
+//            armEncoder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        }
+//        public void tracker(){
+//            armEncoder.setTargetPosition(0);
+//            armEncoder.setPower(0.8);
+//            armEncoder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        }
+
+
     }
 }
