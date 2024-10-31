@@ -40,7 +40,7 @@ public class armEncoder extends LinearOpMode {
             double angle = revolutions * 360;
             double angleNormalized = angle % 360;
 
-            // If the X button is pressed, raise the arm.
+            // If the X button is pressed, raise the arm
             if (gamepad1.x && ((-1* encoderValue) <= 1920.0)) {
                 if((-1* encoderValue) >= 1820.0){
                     double differencePOS = 1920.0 - (-1* encoderValue);
