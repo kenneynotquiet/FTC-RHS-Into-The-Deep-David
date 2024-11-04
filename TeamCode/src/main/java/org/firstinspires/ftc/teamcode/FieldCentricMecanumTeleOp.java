@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.Base64;
@@ -21,8 +24,8 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("rightBack");
         DcMotor armMotor = hardwareMap.dcMotor.get("armMotor");
-
-
+        Servo clawPivot = hardwareMap.servo.get("clawPivot");
+        CRServo intakeGo = hardwareMap.crservo.get("intakeGo");
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
@@ -59,8 +62,24 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             } else {
                 armMotor.setPower(0);
             }
-
-
+            if (gamepad1.dpad_left) {
+                clawPivot.setPosition(.87);
+            }
+            if (gamepad1.dpad_right) {
+                clawPivot.setPosition(.44);
+            }
+            if (gamepad1.dpad_down) {
+                clawPivot.setPosition(.5);
+            }
+            if (gamepad1.right_bumper) {
+                intakeGo.setPower(1);
+            }
+            if (gamepad1.left_bumper) {
+                intakeGo.setPower(-1);
+            }
+            if (gamepad1.a) {
+                intakeGo.setPower(0);
+            }
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
             // Rotate the movement direction counter to the bot's rotation
