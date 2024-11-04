@@ -41,12 +41,14 @@ public class armEncoder extends LinearOpMode {
             double angleNormalized = angle % 360;
 
             // If the X button is pressed, raise the arm
+            //Power = a * ((e^x) - 1) where a = (0.3/((e^100) - 1)
             if (gamepad1.x && ((-1* encoderValue) <= 1920.0)) {
-                if((-1* encoderValue) >= 1820.0){
+                if((-1* encoderValue) >= 1900.0){
                     double differencePOS = 1920.0 - (-1* encoderValue);
-                    double logval = Math.log10(differencePOS);
-                    armPivot.setPower(Math.pow(0.3, logval));
-                    telemetry.addData("logval", logval);
+                    double a = (0.3 / (Math.pow(Math.E, 20) - 1));
+                    double armPower = a * (Math.pow(Math.E, differencePOS) - 1);
+                    armPivot.setPower(armPower);
+                    telemetry.addData("armPower value", armPower);
                 } else {
                     armPivot.setPower(0.6);
                 }
