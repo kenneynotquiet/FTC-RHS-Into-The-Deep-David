@@ -119,13 +119,13 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
                     case Retracting:
                         armMotorDesiredPosition = 0;
                         armPivotDesiredPosition = pivotAngleDeg;
-                        if (Math.abs(armMotorPosition) < .2) {
+                        if (Math.abs(armPositionInches) < .5) {
                             state = ArmState.Pivoting;
                         }
                         break;
                     case Extending:
                         armPivotDesiredPosition = pivotAngleDeg;
-                        if (Math.abs(armMotorPosition - armMotorDesiredPosition) < 5) {
+                        if (Math.abs(armPositionInches - armMotorDesiredPosition) < 5) {
                             state = ArmState.Holding;
                         }
                         break;
