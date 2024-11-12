@@ -45,6 +45,9 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Servo clawPivot = hardwareMap.servo.get("clawPivot");
         CRServo intakeGo = hardwareMap.crservo.get("intakeGo");
+        Servo climbServo1 = hardwareMap.servo.get("climbServo1");
+        Servo climbServo2 = hardwareMap.servo.get("climbServo2");
+        DcMotor climber = hardwareMap.dcMotor.get("climber");
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
@@ -65,6 +68,8 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         waitForStart();
         final double CPD = -1961.0 / 90.0;
         boolean wasCl = false;
+
+        boolean wasLBPressed = false;
         double pivotStartPosDeg = armPivot.getCurrentPosition() / CPD;
         Ewma e = new Ewma(0.25);
         Ewma e2 = new Ewma(0.25);
@@ -92,6 +97,32 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             double armPivotDesiredPosition = 0;
             final double armPivotKp = 1.0/1.5;
 
+            if (gamepad1.dpad_up) {
+                climber.setPower(1.0);
+            } else if (gamepad1.dpad_down) {
+                climber.setPower(-1.0);
+            } else {
+                climber.setPower(0.0);
+            }
+
+//            boolean leftBumperRising = gamepad1.left_bumper && !wasLBPressed;
+//            if (leftBumperRising) {
+//                climbServo1.setPosition(.62);
+//                climbServo2.setPosition(.38);
+//            }
+//            wasLBPressed = gamepad1.left_bumper;
+            if (gamepad1.dpad_left) {
+                climbServo1.setPosition((.65));
+                climbServo2.setPosition(.35);
+            }
+            if (gamepad1.dpad_right) {
+                climbServo1.setPosition((.05));
+                climbServo2.setPosition(.95);
+            }
+            if (gamepad1.left_bumper) {
+                climbServo1.setPosition((.72));
+                climbServo2.setPosition(.28);
+            }
             if (gamepad1.b) {
                 armMotorDesiredPosition = 3;
                 armPivotDesiredPosition = 45;
@@ -157,21 +188,6 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             }
             telemetry.addData("Pivot Desired", armPivotDesiredPosition);
 
-            if (gamepad1.dpad_left) {
-                clawPivot.setPosition(.87);
-            }
-            if (gamepad1.dpad_right) {
-                clawPivot.setPosition(.44);
-            }
-            if (gamepad1.dpad_down) {
-                clawPivot.setPosition(.5);
-            }
-            if (gamepad1.right_bumper) {
-                intakeGo.setPower(1);
-            }
-            if (gamepad1.left_bumper) {
-                intakeGo.setPower(-1);
-            }
             if (gamepad1.a) {
                 intakeGo.setPower(0);
             }
