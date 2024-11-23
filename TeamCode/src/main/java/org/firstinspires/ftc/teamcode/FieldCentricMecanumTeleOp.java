@@ -50,6 +50,7 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         Servo climbServo1 = hardwareMap.servo.get("climbServo1");
         Servo climbServo2 = hardwareMap.servo.get("climbServo2");
         DcMotor climber = hardwareMap.dcMotor.get("climber");
+        Servo spGrab = hardwareMap.servo.get("spGrab");
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
@@ -73,6 +74,8 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         waitForStart();
         final double CPD = -1961.0 / 90.0;
         boolean wasCl = false;
+        double armPivotDesiredPosition = 0;
+        double armMotorDesiredPosition = 0;
 
         boolean wasLBPressed = false;
         double pivotStartPosDeg = armPivot.getCurrentPosition() / CPD;
@@ -98,12 +101,10 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             double pivotAngleDeg = armPivot.getCurrentPosition() / CPD - pivotStartPosDeg;
             telemetry.addData("Pivot Angle", pivotAngleDeg);
             // Get the target position of the armPivot
-            double armMotorDesiredPosition = 0;
             final double armMotorKp = 0.75;
             boolean armCl = false;
 
-            double armPivotDesiredPosition = 0;
-            final double armPivotKp = 1.0/40;
+            final double armPivotKp = 1.0 / 40;
 
             if (gamepad1.dpad_up) {
                 climber.setPower(1.0);
@@ -130,37 +131,71 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             if (gamepad1.left_bumper) {
                 climbServo1.setPosition((.72));
                 climbServo2.setPosition(.28);
+
             }
-            if (gamepad1.b) {
+            if (gamepad1.x){
+                armMotorDesiredPosition = 0;
+                armPivotDesiredPosition = 20;
+                clawPivot.setPosition(.82);
+                armCl = true;
+            } else if (gamepad1.right_bumper) {
+                armMotorDesiredPosition = 3;
+                armPivotDesiredPosition = 13;
+                clawPivot.setPosition(.32);
+                armCl = true;
+
+            }if (gamepad2.y) {
 //                armMotorDesiredPosition = 0;
 //                armPivotDesiredPosition = 45;
 //                clawPivot.setPosition(.5);
-//
-//                armCl = true;
+                armMotorDesiredPosition = 8.25;
+                armPivotDesiredPosition = 88;
+                clawPivot.setPosition(.42);
+                armCl = true;
 
-                armPivot.setPower(.5);
-                armPivot2.setPower(.5);
-            } else if (gamepad1.y) {
-//                armMotorDesiredPosition = 0;
-//                armPivotDesiredPosition = 8;
-//                clawPivot.setPosition(.4);
-//
-//                armCl = true;
-                armPivot.setPower(-.5);
-                armPivot2.setPower(-.5);
+            } else if (gamepad2.a) {
+                armMotorDesiredPosition = 0;
+                armPivotDesiredPosition = 8;
+                clawPivot.setPosition(.9);
+
+                armCl = true;
+
+            } else if (gamepad2.b) {
+                armMotorDesiredPosition = 3.85;
+                armPivotDesiredPosition = 100;
+                clawPivot.setPosition(.8);
+
+                armCl = true;
+
+            } else if (gamepad2.x) {
+                armMotorDesiredPosition = 3.5;
+                armPivotDesiredPosition = 55;
+                clawPivot.setPosition(.65);
+
+                armCl = true;
+
+            }while (gamepad2.right_bumper) {
+                intakeGo.setPower(-.7);
+
+            }while (gamepad2.left_bumper) {
+                intakeGo.setPower(1.1);
+            }
+            if (gamepad1.y) {
+                spGrab.setPosition(.4);
             }
 
-
-        if (armCl && !wasCl) {
+            if (armCl && !wasCl) {
                 state = ArmState.Retracting;
             }
 
             wasCl = armCl;
 
+            //i have sigma ohio rizz
+
             telemetry.addData("State", state);
             // if (Math.abs(error) < .1) {
             final double pKf = 0.0;
-            if (armCl) {
+            if (armCl || true) {
                 switch (state) {
                     case Holding:
                         break;
@@ -188,14 +223,13 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
                 double armPivotError = armPivotDesiredPosition - pivotAngleDeg;
                 telemetry.addData("Pivot Error", armPivotError);
                 armPivotDesiredPosition = e.calculate(armPivotDesiredPosition);
-
                 double pivotFf = pKf * Math.cos(Math.toRadians(armPivotDesiredPosition));
 
                 armMotorDesiredPosition = e2.calculate(armMotorDesiredPosition);
-                if (Math.abs(armMotorDesiredPosition) > 0) {
-                    pivotFf *= (1.0 + 1.0 / 3.0 * armMotorDesiredPosition);
-                }
-                pivotFf = 0;
+//                if (Math.abs(armMotorDesiredPosition) > 0) {
+//                    pivotFf *= (1.0 + 1.0 / 3.0 * armMotorDesiredPosition);
+//                }
+//                pivotFf = 0;
                 double armMotorError = armMotorDesiredPosition - armPositionInches;
                 armMotor.setPower(armMotorKp * armMotorError);
                 armPivot.setPower(armPivotKp * armPivotError + pivotFf);
