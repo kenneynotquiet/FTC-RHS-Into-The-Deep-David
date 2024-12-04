@@ -65,14 +65,14 @@ import java.util.List;
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
             // drive model parameters
-            public double inPerTick = 0.002974;
-            public double lateralInPerTick = 0.002185541991174969;
-            public double trackWidthTicks = 76.30568594296177; //change this
+            public double inPerTick = 0.003013371837529; //determined from average of 3 trials
+            public double lateralInPerTick = 0.0022175482403538603; //points linear but very croockeed
+            public double trackWidthTicks = 76.25663908584323;
 
             // feedforward parameters (in tick units)
-            public double kS = 2.1823200480292853;
-            public double kV = 0.0005765520621948366;
-            public double kA = 0;
+            public double kS = 2.1809014263839277;
+            public double kV = 0.0005770860234288239;
+            public double kA = 0.0001;
 
             // path profile parameters (in inches)
             public double maxWheelVel = 50;
