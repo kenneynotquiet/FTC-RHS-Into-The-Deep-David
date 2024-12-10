@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import java.util.Base64;
 
 import kotlin._Assertions;
+import kotlin.math.UMathKt;
 
 @TeleOp
 public class FieldCentricMecanumTeleOp extends LinearOpMode {
@@ -33,7 +34,9 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         Extending,
         Retracting,
         Pivoting,
-        Holding
+        Holding,
+        Wristing,
+
     }
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,7 +53,8 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         Servo climbServo1 = hardwareMap.servo.get("climbServo1");
         Servo climbServo2 = hardwareMap.servo.get("climbServo2");
         DcMotor climber = hardwareMap.dcMotor.get("climber");
-        Servo spGrab = hardwareMap.servo.get("spGrab");
+        Servo clawRotate = hardwareMap.servo.get("clawRotate");
+        Servo clawPivot2 = hardwareMap.servo.get("clawPivot2");
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
@@ -83,13 +87,21 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         Ewma e2 = new Ewma(0.25);
         if (isStopRequested()) return;
 
+        //ClawPivot: Higher is upwards
+        //ClawPivot: Lower is Upwards
         //set position to default state
-        clawPivot.setPosition(.85);
+        clawPivot.setPosition(.9);
+        clawPivot2.setPosition(.1);
+        clawRotate.setPosition(.48);
+
+        double clawPivotTarget = 0.9;
+        double clawPivot2Target = 0.1;
+        double clawRotateTarget = 0.48;
 
         while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
+            double y = -gamepad1.left_stick_y*-gamepad1.left_stick_y*-gamepad1.left_stick_y*.6; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_x*gamepad1.left_stick_x*gamepad1.left_stick_x*.6;
+            double rx = gamepad1.right_stick_x*gamepad1.right_stick_x*gamepad1.right_stick_x*.75;
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
@@ -104,7 +116,7 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             final double armMotorKp = 0.75;
             boolean armCl = false;
 
-            final double armPivotKp = 1.0 / 40;
+            final double armPivotKp = 1.0 / 22.0;
 
             if (gamepad1.dpad_up) {
                 climber.setPower(1.0);
@@ -135,53 +147,82 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             }
             if (gamepad1.x){
                 armMotorDesiredPosition = 0;
-                armPivotDesiredPosition = 20;
-                clawPivot.setPosition(.82);
+                armPivotDesiredPosition = 15;
+                clawPivotTarget = 0.75;
+                clawPivot2Target = .82;
+                clawRotateTarget = 1;
                 armCl = true;
-            } else if (gamepad1.right_bumper) {
-                armMotorDesiredPosition = 3;
-                armPivotDesiredPosition = 13;
-                clawPivot.setPosition(.32);
+            }
+            //Intake Button
+             if (gamepad1.right_bumper) {
+                armMotorDesiredPosition = 4;
+                armPivotDesiredPosition = 10;
+//                clawPivot.setPosition(.4);
+//                clawPivot2.setPosition(.44);
+//                clawRotate.setPosition(.48);
+                clawPivotTarget = 0.4;
+                clawPivot2Target = .42;
+                clawRotateTarget = .48;
                 armCl = true;
 
             }if (gamepad2.y) {
 //                armMotorDesiredPosition = 0;
 //                armPivotDesiredPosition = 45;
 //                clawPivot.setPosition(.5);
-                armMotorDesiredPosition = 8.25;
-                armPivotDesiredPosition = 88;
-                clawPivot.setPosition(.42);
+                armMotorDesiredPosition = 7.7;
+                armPivotDesiredPosition = 86;
+//                clawPivot.setPosition(.55);
+//                clawPivot2.setPosition(.2);
+//                clawRotate.setPosition(.48);
+                clawPivotTarget = 0.55;
+                clawPivot2Target = 0.7;
+                clawRotateTarget = 0.48;
                 armCl = true;
 
-            } else if (gamepad2.a) {
+            } else if (gamepad1.a) {
                 armMotorDesiredPosition = 0;
-                armPivotDesiredPosition = 8;
-                clawPivot.setPosition(.9);
+                armPivotDesiredPosition = 10;
+//                clawPivot.setPosition(.9);
+//                clawPivot2.setPosition(.1);
+//                clawRotate.setPosition(.48);
+                clawPivotTarget = 0.9;
+                clawPivot2Target = 0.1;
+                clawRotateTarget = 0.48;
 
                 armCl = true;
 
             } else if (gamepad2.b) {
                 armMotorDesiredPosition = 3.85;
-                armPivotDesiredPosition = 100;
-                clawPivot.setPosition(.8);
+                armPivotDesiredPosition = 95;
+//                clawPivot.setPosition(.8);
+//                clawPivot2.setPosition(.3);
+//                clawRotate.setPosition(.48);
+                clawPivotTarget = 0.8;
+                clawPivot2Target = 0.3;
+                clawRotateTarget = 0.48;
 
                 armCl = true;
 
             } else if (gamepad2.x) {
-                armMotorDesiredPosition = 3.5;
-                armPivotDesiredPosition = 55;
-                clawPivot.setPosition(.65);
+                armMotorDesiredPosition = 0;
+                armPivotDesiredPosition = 93;
+//                clawPivot.setPosition(.78);
+//                clawPivot2.setPosition(.72);
+//                clawRotate.setPosition(0);
+                clawPivotTarget = 0.78;
+                clawPivot2Target = 0.72;
+                clawRotateTarget = 0.0;
 
                 armCl = true;
 
-            }while (gamepad2.right_bumper) {
-                intakeGo.setPower(-.7);
-
-            }while (gamepad2.left_bumper) {
-                intakeGo.setPower(1.1);
+//            }while (gamepad2.right_bumper) {
+//                intakeGo.setPower(-.7);
+//
+//            }while (gamepad2.left_bumper) {
+//                intakeGo.setPower(1.1);
             }
             if (gamepad1.y) {
-                spGrab.setPosition(.4);
+                clawRotate.setPosition(.4);
             }
 
             if (armCl && !wasCl) {
@@ -191,6 +232,7 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             wasCl = armCl;
 
             //i have sigma ohio rizz
+            // skibidi toilet
 
             telemetry.addData("State", state);
             // if (Math.abs(error) < .1) {
@@ -198,9 +240,15 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             if (armCl || true) {
                 switch (state) {
                     case Holding:
+                        state = ArmState.Wristing;
                         break;
                     case Retracting:
-                        armMotorDesiredPosition = 0;
+                        if (Math.abs(armPositionInches) > 0.35) {
+                            clawPivot.setPosition(.5);
+                            clawPivot2.setPosition(.5);
+                            clawRotate.setPosition(.48);
+                            armMotorDesiredPosition = 0;
+                        }
                         armPivotDesiredPosition = pivotAngleDeg;
                         if (Math.abs(armPositionInches) < .5) {
                             state = ArmState.Pivoting;
@@ -218,8 +266,12 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
                             state = ArmState.Extending;
                         }
                         break;
+                    case Wristing:
+                        clawPivot.setPosition(clawPivotTarget);
+                        clawPivot2.setPosition(clawPivot2Target);
+                        clawRotate.setPosition(clawRotateTarget);
                 }
-
+                telemetry.addData("State", state.toString());
                 double armPivotError = armPivotDesiredPosition - pivotAngleDeg;
                 telemetry.addData("Pivot Error", armPivotError);
                 armPivotDesiredPosition = e.calculate(armPivotDesiredPosition);
@@ -242,10 +294,10 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             }
             telemetry.addData("Pivot Desired", armPivotDesiredPosition);
 
-            if (gamepad1.right_trigger >= 0.000001) {
-                intakeGo.setPower(.2);
-            } else if (gamepad1.left_trigger >= 0.000001) {
-                intakeGo.setPower(-.2);
+            if (gamepad1.right_trigger > 0.2) {
+                intakeGo.setPower(-1);
+            } else if (gamepad1.left_trigger > 0.2) {
+                    intakeGo.setPower(1);
             } else {
                 intakeGo.setPower(0);
             }
@@ -269,7 +321,7 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
             double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-            rotX = rotX * 1.1;  // Counteract imperfect strafing
+            rotX = rotX * 1.3;  // Counteract imperfect strafing
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
