@@ -56,7 +56,7 @@ import java.util.List;
     @Config
     public final class MecanumDrive {
         public static class Params {
-            // IMU orientationn
+            // IMU orientation
             // TODO: fill in these values based on
             //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
             public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
@@ -80,13 +80,13 @@ import java.util.List;
             public double maxProfileAccel = 25;
 
             // turn profile parameters (in radians)
-            public double maxAngVel = Math.PI; // shared with path
-            public double maxAngAccel = Math.PI;
+            public double maxAngVel = Math.PI*5; // shared with path
+            public double maxAngAccel = Math.PI*10;
 
             // path controller gains (on laptop gamepad blue circle is irl and green circle is where it is meant to be) x and y swapped for some reason on telemetry
             public double axialGain = 4.0; // forward and backwards
             public double lateralGain = 2.0;
-            public double headingGain = 1.0; // shared with turn; rotational
+            public double headingGain = 1000.0; // shared with turn; rotational
 
             public double axialVelGain = 0.0;
             public double lateralVelGain = 0.0;
@@ -387,8 +387,10 @@ import java.util.List;
                 } else {
                     t = Actions.now() - beginTs;
                 }
+                double error = pose.heading.minus(Rotation2d.fromDouble(turn.angle));
+                p.put("Error", error);
 
-                if (t >= turn.duration) {
+                if (t >= turn.duration && Math.abs(error) < Math.toRadians(5)) {
                     leftFront.setPower(0);
                     leftBack.setPower(0);
                     rightBack.setPower(0);
@@ -421,10 +423,20 @@ import java.util.List;
                         voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
                 ));
 
-                leftFront.setPower(feedforward.compute(wheelVels.leftFront) / voltage);
-                leftBack.setPower(feedforward.compute(wheelVels.leftBack) / voltage);
-                rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
-                rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
+                p.put("Angular Vel Command", command.angVel.value());
+                p.put("Front Left Command", wheelVels.leftFront.value());
+                p.put("Computed Front Left Power", leftFrontPower);
+                p.put("Heading Desired", Math.toDegrees(txWorldTarget.heading.value().toDouble()));
+                p.put("Heading Actual", Math.toDegrees(pose.heading.toDouble()));
+                p.put("Trajectory Time", t);
+                p.put("Duration", turn.duration);
+                p.put("Left Front Power1", leftFront.getPower());
+
+                leftFront.setPower(leftFrontPower);
+                leftBack.setPower(leftBackPower);
+                rightBack.setPower(rightBackPower);
+                rightFront.setPower(rightFrontPower);
+                p.put("Left Front Power2", leftFront.getPower());
 
                 Canvas c = p.fieldOverlay();
                 drawPoseHistory(c);
