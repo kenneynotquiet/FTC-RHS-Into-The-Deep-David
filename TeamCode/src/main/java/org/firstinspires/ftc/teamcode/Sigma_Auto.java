@@ -97,12 +97,6 @@ public class Sigma_Auto extends LinearOpMode {
                 .lineToY(20)
                 .waitSeconds(5);
         Action finish = tab1.endTrajectory().fresh().build();
-            armMotorDesiredPosition = 7.7;
-            armPivotDesiredPosition = 93;
-            clawPivot.setPosition(.55);
-            clawPivot2.setPosition(.2);
-            clawRotate.setPosition(.48);
-            armCl = true;
 
 
         Actions.runBlocking(new SequentialAction(
