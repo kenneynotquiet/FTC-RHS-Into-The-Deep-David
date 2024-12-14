@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -54,6 +55,9 @@ import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumLocalizerInputsMessage;
 import org.firstinspires.ftc.teamcode.messages.PoseMessage;
 
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
+
 import java.lang.Math;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -61,6 +65,7 @@ import java.util.List;
 
 //from frield centic class
 
+import org.firstinspires.ftc.teamcode.Arm_Auto;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
@@ -77,19 +82,44 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Sigma_Auto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        Pose2d initial = new Pose2d(0,0,0);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initial);
          //Servo servo = hardwareMap.servo.get("servo");
 
         waitForStart();
 
+        // actionBuilder builds from the drive steps passed to it
+        TrajectoryActionBuilder tab1 = drive.actionBuilder(initial)
+                //high basket score off rip
+                .lineToX(24)
+                .turn(Math.toRadians(135.0))
+                .setTangent(90)
+                .lineToY(20)
+                .waitSeconds(5);
+        Action finish = tab1.endTrajectory().fresh().build();
+            armMotorDesiredPosition = 7.7;
+            armPivotDesiredPosition = 93;
+            clawPivot.setPosition(.55);
+            clawPivot2.setPosition(.2);
+            clawRotate.setPosition(.48);
+            armCl = true;
+
+
+        Actions.runBlocking(new SequentialAction(
+                tab1.build(),finish
+        ));
+
+        if(isStopRequested()) return;
+/**
         Actions.runBlocking(
                 drive.actionBuilder(new Pose2d(0, 0, 0))
-                        .lineToX(1)
-                        .lineToY(1)
-                        .lineToX(0)
-                        .lineToY(0)
+                        //high basket score off rip
+                        .lineToXSplineHeading(15, Math.toRadians(90))
+//                        .lineToX(25)
+//                        .turn(Math.toRadians(-135))
+//                        .lineToX(15)
                         .build());
-
+**/
         Encoder par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack"))); //rightBack
         Encoder par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront"))); //leftFront
         Encoder perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
