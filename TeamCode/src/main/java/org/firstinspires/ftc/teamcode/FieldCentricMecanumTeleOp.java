@@ -13,7 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.Base64;
 
-import kotlin._Assertions;
 import kotlin.math.UMathKt;
 
 @TeleOp
