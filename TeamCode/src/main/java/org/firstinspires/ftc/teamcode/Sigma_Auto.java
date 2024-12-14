@@ -126,5 +126,5 @@ public class Sigma_Auto extends LinearOpMode {
 
     }
 
-    //hi
+    //hi,
 }
