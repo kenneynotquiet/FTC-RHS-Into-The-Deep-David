@@ -65,17 +65,17 @@ import java.util.List;
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
             // drive model parameters
-            public double inPerTick = 0.003013371837529; //determined from average of 3 trials
-            public double lateralInPerTick = 0.0022175482403538603; //points linear but very croockeed
-            public double trackWidthTicks = 76.25663908584323;
+            public double inPerTick = 0.00298589754468555047903373883131;
+            public double lateralInPerTick = 0.0016966397743205302; //points linear but very croockeed
+            public double trackWidthTicks = 69.15173428416195;
 
             // feedforward parameters (in tick units)
-            public double kS = 2.1809014263839277;
-            public double kV = 0.0005770860234288239;
+            public double kS = 1; //1.4986058118675487
+            public double kV = 0.0007224258972185784;
             public double kA = 0.0001;
 
             // path profile parameters (in inches)
-            public double maxWheelVel = 50;
+            public double maxWheelVel = 18;
             public double minProfileAccel = -30;
             public double maxProfileAccel = 25;
 
@@ -84,9 +84,9 @@ import java.util.List;
             public double maxAngAccel = Math.PI;
 
             // path controller gains (on laptop gamepad blue circle is irl and green circle is where it is meant to be) x and y swapped for some reason on telemetry
-            public double axialGain = 0.0; // forward and backwards
-            public double lateralGain = 5.0;
-            public double headingGain = 15.0; // shared with turn; rotational
+            public double axialGain = 4.0; // forward and backwards
+            public double lateralGain = 2.0;
+            public double headingGain = 1.0; // shared with turn; rotational
 
             public double axialVelGain = 0.0;
             public double lateralVelGain = 0.0;
