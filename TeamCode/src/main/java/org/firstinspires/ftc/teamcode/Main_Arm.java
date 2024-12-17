@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+
 public class Main_Arm {
 //Create motor/servo Objects
     public DcMotor armMotor;
@@ -25,8 +26,116 @@ public class Main_Arm {
         clawPivot2 = HardwareMap.get(Servo.class, "clawPivot2");
         clawRotate = HardwareMap.get(Servo.class, "clawRotate");
         intakeGo = HardwareMap.get(CRServo.class, "intakeGo");
+        armPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armPivot2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+    class Ewma {
+        public Ewma(double alpha) {
+            this.alpha = alpha;
+        }
+        double alpha;
+        double value;
+        double calculate(double v) {
+            value = alpha * v + (1 - alpha) * value;
+            return value;
+        }
     }
 
+    enum ArmState {
+        Extending,
+        Retracting,
+        Pivoting,
+        Holding,
+        Wrist,
+
+    }
+    ArmState state = ArmState.Holding;
+    final double CPD = -1961.0 / 90.0;
+    boolean wasCl = false;
+    double armPivotDesiredPosition = 0;
+    double armMotorDesiredPosition = 0;
+
+    boolean wasLBPressed = false;
+    double pivotStartPosDeg = armPivot.getCurrentPosition() / CPD;
+    Ewma e = new Ewma(0.25);
+    Ewma e2 = new Ewma(0.25);
+
+    double clawPivotTarget = 0.9;
+    double clawPivot2Target = 0.1;
+    double clawRotateTarget = 0.48;
+    double armMotorPosition = armMotor.getCurrentPosition();
+    final double ticksPerInchArm = 296;
+    double armPositionInches = armMotorPosition / ticksPerInchArm;
+    double pivotAngleDeg = armPivot.getCurrentPosition() / CPD - pivotStartPosDeg;
+    // Get the target position of the armPivot
+    final double armMotorKp = 0.75;
+    boolean armCl = false;
+
+    final double armPivotKp = 1.0 / 20.0;
+    if (armCl && !wasCl) {
+        state = ArmState.Retracting;
+    }
+
+    wasCl = armCl;
+
+
+    // if (Math.abs(error) < .1) {
+    final double pKf = 0.0;
+             (armCl || true)
+
+    {
+        switch (state) {
+            case Holding:
+                state = ArmState.Wrist;
+                break;
+            case Retracting:
+                if (Math.abs(armPositionInches) > 0.35) {
+                    clawPivot.setPosition(.5);
+                    clawPivot2.setPosition(.5);
+                    clawRotate.setPosition(.48);
+                    armMotorDesiredPosition = 0;
+                }
+                armPivotDesiredPosition = pivotAngleDeg;
+                if (Math.abs(armPositionInches) < .5) {
+                    state = ArmState.Pivoting;
+                }
+                break;
+            case Extending:
+                armPivotDesiredPosition = pivotAngleDeg;
+                if (Math.abs(armPositionInches - armMotorDesiredPosition) < 5) {
+                    state = ArmState.Holding;
+                }
+                break;
+            case Pivoting:
+                armMotorDesiredPosition = 0;
+                if (Math.abs(armPivotDesiredPosition - pivotAngleDeg) < 5) {
+                    state = ArmState.Extending;
+                }
+                break;
+            case Wrist:
+                clawPivot.setPosition(clawPivotTarget);
+                clawPivot2.setPosition(clawPivot2Target);
+                clawRotate.setPosition(clawRotateTarget);
+        }
+        double armPivotError = armPivotDesiredPosition - pivotAngleDeg;
+        armPivotDesiredPosition = e.calculate(armPivotDesiredPosition);
+        double pivotFf = pKf * Math.cos(Math.toRadians(armPivotDesiredPosition));
+
+        armMotorDesiredPosition = e2.calculate(armMotorDesiredPosition);
+//                if (Math.abs(armMotorDesiredPosition) > 0) {
+//                    pivotFf *= (1.0 + 1.0 / 3.0 * armMotorDesiredPosition);
+//                }
+//                pivotFf = 0;
+        double armMotorError = armMotorDesiredPosition - armPositionInches;
+        armMotor.setPower(armMotorKp * armMotorError);
+        armPivot.setPower(armPivotKp * armPivotError + pivotFf);
+        armPivot2.setPower(armPivotKp * armPivotError + pivotFf);
+
+    } else {
+        armMotor.setPower(0);
+        armPivot.setPower(pKf * Math.cos(Math.toRadians(pivotAngleDeg)));
+        armPivot2.setPower(pKf * Math.cos(Math.toRadians(pivotAngleDeg)));
+    }
 
 
 
