@@ -72,12 +72,125 @@ public class Main_Arm {
     boolean armCl = false;
 
     final double armPivotKp = 1.0 / 20.0;
+
+            if (gamepad1.dpad_left) {
+        climbServo1.setPosition((.65));
+        climbServo2.setPosition(.35);
+    }
+            if (gamepad1.dpad_right) {
+        climbServo1.setPosition((.05));
+        climbServo2.setPosition(.95);
+    }
+            if (gamepad1.left_bumper) {
+        climbServo1.setPosition((.76));
+        climbServo2.setPosition(.24);
+
+    }
+            if (gamepad1.x) {
+        armMotorDesiredPosition = 0;
+        armPivotDesiredPosition = 8;
+        clawPivotTarget = 0.85;
+        clawPivot2Target = 0.9;
+        clawRotateTarget = 1;
+        armCl = true;
+    }
+
+            if (gamepad1.y) {
+        armMotorDesiredPosition = 0;
+        armPivotDesiredPosition = 4;
+        clawPivotTarget = 0.87;
+        clawPivot2Target = 0.75;
+        clawRotateTarget = 0.0;
+
+        armCl = true;
+    }
+
+            //Intake Button
+            if (gamepad1.right_bumper) {
+        armMotorDesiredPosition = 4;
+        armPivotDesiredPosition = 7;
+//                clawPivot.setPosition(.4);
+//                clawPivot2.setPosition(.44);
+//                clawRotate.setPosition(.48);
+        clawPivotTarget = 0.4;
+        clawPivot2Target = .35;
+        clawRotateTarget = .48;
+        armCl = true;
+
+    }
+            if (gamepad2.y) {
+//                armMotorDesiredPosition = 0;
+//                armPivotDesiredPosition = 45;
+//                clawPivot.setPosition(.5);
+        armMotorDesiredPosition = 7.7;
+        armPivotDesiredPosition = 75;
+//                clawPivot.setPosition(.55);
+//                clawPivot2.setPosition(.2);
+//                clawRotate.setPosition(.48);
+        clawPivotTarget = 0.55;
+        clawPivot2Target = 0.6;
+        clawRotateTarget = 0.48;
+        armCl = true;
+
+    } else if (gamepad1.a) {
+        armMotorDesiredPosition = 0;
+        armPivotDesiredPosition = 4;
+//                clawPivot.setPosition(.9);
+//                clawPivot2.setPosition(.1);
+//                clawRotate.setPosition(.48);
+        clawPivotTarget = 0.9;
+        clawPivot2Target = 0.1;
+        clawRotateTarget = 0.48;
+
+        armCl = true;
+
+    } else if (gamepad2.b) {
+        armMotorDesiredPosition = 3.85;
+        armPivotDesiredPosition = 95;
+//                clawPivot.setPosition(.8);
+//                clawPivot2.setPosition(.3);
+//                clawRotate.setPosition(.48);
+        clawPivotTarget = 0.65;
+        clawPivot2Target = 0.3;
+        clawRotateTarget = 0.48;
+
+        armCl = true;
+
+    } else if (gamepad2.x) {
+//                armMotorDesiredPosition = 0;
+        armPivotDesiredPosition = 100;
+//                clawPivot.setPosition(.78);
+//                clawPivot2.setPosition(.72);
+//                clawRotate.setPosition(0);
+//                clawPivotTarget = 0.9;
+//                clawPivot2Target = .3;
+//                clawRotateTarget = 0.0;
+
+        armCl = true;
+
+//            }while (gamepad2.right_bumper) {
+//                intakeGo.setPower(-.7);
+//
+//            }while (gamepad2.left_bumper) {
+//                intakeGo.setPower(1.1);
+    } else if (gamepad2.right_bumper) {
+//                armMotorDesiredPosition = 0;
+//                armPivotDesiredPosition = 93;
+//                clawPivot.setPosition(.78);
+//                clawPivot2.setPosition(.72);
+//                clawRotate.setPosition(0);
+//                clawPivotTarget = 0.78;
+        clawPivot2Target = .1;
+//                clawRotateTarget = 0.0;
+
+        armCl = true;
+    }
+
     if (armCl && !wasCl) {
         state = ArmState.Retracting;
     }
 
     wasCl = armCl;
-
 
     // if (Math.abs(error) < .1) {
     final double pKf = 0.0;
