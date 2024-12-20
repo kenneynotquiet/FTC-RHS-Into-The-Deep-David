@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static android.provider.SyncStateContract.Helpers.update;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -129,7 +131,8 @@ public class ActualTeleOpV1 extends LinearOpMode {
                 drive.updatePoseEstimate();
 
                 if (gamepad1.x) {
-
+                    Main_Arm.sampleLongIntake();
+                    // Extends Arm into Intake Position
                 }
 
 

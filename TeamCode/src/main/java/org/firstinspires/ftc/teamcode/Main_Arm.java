@@ -89,6 +89,7 @@ public class Main_Arm {
         clawPivot2Target = 0.9;
         clawRotateTarget = 1;
         armCl = true;
+        state = ArmState.Retracting;
     }
 
     public void specimenPrep() {
@@ -99,6 +100,7 @@ public class Main_Arm {
         clawRotateTarget = 0.0;
 
         armCl = true;
+        state = ArmState.Retracting;
     }
 
     public void sampleLongIntake() {
@@ -108,7 +110,7 @@ public class Main_Arm {
         clawPivot2Target = .35;
         clawRotateTarget = .48;
         armCl = true;
-
+        state = ArmState.Retracting;
     }
 
     public void scoreSampleHigh() {
@@ -118,6 +120,7 @@ public class Main_Arm {
         clawPivot2Target = 0.6;
         clawRotateTarget = 0.48;
         armCl = true;
+        state = ArmState.Retracting;
     }
 
     public void normalStow() {
@@ -128,6 +131,7 @@ public class Main_Arm {
         clawRotateTarget = 0.48;
 
         armCl = true;
+        state = ArmState.Retracting;
     }
 
     public void scoreSampleMid() {
@@ -146,6 +150,9 @@ public class Main_Arm {
 
         armCl = true;
 
+    }
+
+    public void update(boolean armCl) {
 
         if (armCl && !wasCl) {
             state = ArmState.Retracting;
