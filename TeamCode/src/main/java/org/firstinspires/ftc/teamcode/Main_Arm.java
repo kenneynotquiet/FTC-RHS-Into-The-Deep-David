@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode;
+import static android.provider.SyncStateContract.Helpers.update;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -80,7 +82,7 @@ public class Main_Arm {
     final double armPivotKp = 1.0 / 20.0;
 
     //
-    public void specimenIntake(int time) {
+    public void specimenIntake() {
         armMotorDesiredPosition = 0;
         armPivotDesiredPosition = 8;
         clawPivotTarget = 0.85;
@@ -89,7 +91,7 @@ public class Main_Arm {
         armCl = true;
     }
 
-    public void specimenPrep(int time) {
+    public void specimenPrep() {
         armMotorDesiredPosition = 0;
         armPivotDesiredPosition = 4;
         clawPivotTarget = 0.87;
@@ -99,7 +101,7 @@ public class Main_Arm {
         armCl = true;
     }
 
-    public void sampleLongIntake(int time) throws InterruptedException {
+    public void sampleLongIntake() {
         armMotorDesiredPosition = 4;
         armPivotDesiredPosition = 6;
         clawPivotTarget = 0.37;
@@ -107,10 +109,9 @@ public class Main_Arm {
         clawRotateTarget = .48;
         armCl = true;
 
-        wait(time);
     }
 
-    public void scoreSampleHigh(int time) {
+    public void scoreSampleHigh() {
         armMotorDesiredPosition = 7.7;
         armPivotDesiredPosition = 75;
         clawPivotTarget = 0.55;
@@ -119,7 +120,7 @@ public class Main_Arm {
         armCl = true;
     }
 
-    public void normalStow(int time) {
+    public void normalStow() {
         armMotorDesiredPosition = 0;
         armPivotDesiredPosition = 4;
         clawPivotTarget = 0.9;
@@ -129,7 +130,7 @@ public class Main_Arm {
         armCl = true;
     }
 
-    public void scoreSampleMid(int time) {
+    public void scoreSampleMid() {
         armMotorDesiredPosition = 3.85;
         armPivotDesiredPosition = 95;
         clawPivotTarget = 0.65;
@@ -137,9 +138,10 @@ public class Main_Arm {
         clawRotateTarget = 0.48;
 
         armCl = true;
+        state = ArmState.Retracting;
     }
 
-    public void specimenScore(int time) {
+    public void specimenScore() {
         armPivotDesiredPosition = 100;
 
         armCl = true;
