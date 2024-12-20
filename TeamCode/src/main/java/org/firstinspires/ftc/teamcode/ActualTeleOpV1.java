@@ -13,6 +13,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -28,7 +29,6 @@ import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 @TeleOp
 public class ActualTeleOpV1 extends LinearOpMode {
 
-    Main_Arm Main_Arm;
 //    specimenIntake specimenIntake;
 
     public static double inputModulus(double input, double minimumInput, double maximumInput) {
@@ -49,6 +49,8 @@ public class ActualTeleOpV1 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+
+
         //constants and objects
 //        Limelight3A limelight;
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -67,6 +69,8 @@ public class ActualTeleOpV1 extends LinearOpMode {
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
 
             MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+            Main_Arm myArm = new Main_Arm(hardwareMap);
+
             waitForStart();
 
             if (isStopRequested()) return;
@@ -80,6 +84,7 @@ public class ActualTeleOpV1 extends LinearOpMode {
                 // Set the desired rotational velocity based on the right stick's x-axis input (clockwise is negative).
                 double headingVel = -gamepad1.right_stick_x*.6;
                 double headingSetpoint = 0;
+                boolean armcl = false;
                 boolean closedLoop = gamepad1.dpad_down || gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up;
                 if (gamepad1.back) {
                     drive.pose = new Pose2d(drive.pose.position, 0);
@@ -130,10 +135,14 @@ public class ActualTeleOpV1 extends LinearOpMode {
                         headingVel
                 ));
                 drive.updatePoseEstimate();
-
+                myArm.update(armcl);
                 if (gamepad1.x) {
-                    Main_Arm.sampleLongIntake();
+                    myArm.sampleLongIntake();
+
                     // Extends Arm into Intake Position
+
+
+
                 }
 
 
@@ -149,7 +158,7 @@ public class ActualTeleOpV1 extends LinearOpMode {
 //                        telemetry.addData("llpose", "NONE");
 //                    }
 //                }
-
+                telemetry.addData("state" , myArm.state);
                 telemetry.addData("x", drive.pose.position.x);
                 telemetry.addData("y", drive.pose.position.y);
                 telemetry.addData("heading (deg)", headingMeasurement);

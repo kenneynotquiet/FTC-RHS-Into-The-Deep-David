@@ -90,11 +90,17 @@ public class Sigma_Auto extends LinearOpMode {
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initial)
                 //high basket score off rip
-                .lineToX(24)
-                .turn(Math.toRadians(135.0))
+//                .lineToX(24)
+//                .turn(Math.toRadians(135.0))
+//                .setTangent(90)
+//                .lineToY(20)
+//                .waitSeconds(5);
+                .lineToX(40)
                 .setTangent(90)
                 .lineToY(20)
-                .waitSeconds(5);
+                .setTangent(0)
+                .turnTo(Math.toRadians(-180))
+                .lineToX(20);
         Action finish = tab1.endTrajectory().fresh().build();
 
 

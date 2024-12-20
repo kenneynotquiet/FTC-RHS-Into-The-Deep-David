@@ -1,8 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 import static android.provider.SyncStateContract.Helpers.update;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,27 +17,54 @@ import java.util.Base64;
 import kotlin.math.UMathKt;
 
 
-public class Main_Arm {
+public final class Main_Arm {
     //Create motor/servo Objects
-    public DcMotor armMotor;
-    public DcMotor armPivot;
-    public DcMotor armPivot2;
-    public Servo clawPivot;
-    public Servo clawPivot2;
-    public Servo clawRotate;
-    public CRServo intakeGo;
+    public DcMotorEx armMotor;
+    public DcMotorEx armPivot;
+    public DcMotorEx armPivot2;
+    public final Servo clawPivot;
+    public final Servo clawPivot2;
+    public final Servo clawRotate;
+    public final CRServo intakeGo;
+    double pivotStartPosDeg;
+    double armMotorPosition;
+    double pivotAngleDeg;
+
+    enum ArmState {
+        Extending,
+        Retracting,
+        Pivoting,
+        Holding,
+        Wrist,
+
+    }
+
+    ArmState state = ArmState.Holding;
 
     //    Initializing Hardware
-    public void init(HardwareMap HardwareMap) {
-        armMotor = HardwareMap.get(DcMotor.class, "armMotor");
-        armPivot = HardwareMap.get(DcMotor.class, "armPivot");
-        armPivot2 = HardwareMap.get(DcMotor.class, "armPivot2");
-        clawPivot = HardwareMap.get(Servo.class, "clawPivot");
-        clawPivot2 = HardwareMap.get(Servo.class, "clawPivot2");
-        clawRotate = HardwareMap.get(Servo.class, "clawRotate");
-        intakeGo = HardwareMap.get(CRServo.class, "intakeGo");
-        armPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armPivot2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    public Main_Arm(@NonNull HardwareMap hardwareMap) {
+        this.armMotor = hardwareMap.get(DcMotorEx.class, "armMotor");
+        this.armPivot = hardwareMap.get(DcMotorEx.class, "armPivot");
+        this.armPivot2 = hardwareMap.get(DcMotorEx.class, "armPivot2");
+        this.clawPivot = hardwareMap.get(Servo.class, "clawPivot");
+        this.clawPivot2 = hardwareMap.get(Servo.class, "clawPivot2");
+        this.clawRotate = hardwareMap.get(Servo.class, "clawRotate");
+        this.intakeGo = hardwareMap.get(CRServo.class, "intakeGo");
+        this.armPivot.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.armPivot2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        pivotStartPosDeg = armPivot.getCurrentPosition() / CPD;
+        armMotorPosition = armMotor.getCurrentPosition();
+        pivotAngleDeg = armPivot.getCurrentPosition() / CPD - pivotStartPosDeg;
+    }
+
+    public DcMotorEx getArmMotor() {
+        return this.armMotor;
+    }
+    public DcMotorEx getArmPivot() {
+        return this.armPivot;
+    }
+    public DcMotorEx getArmPivot2() {
+        return this.armPivot2;
     }
 
     class Ewma {
@@ -49,37 +81,28 @@ public class Main_Arm {
         }
     }
 
-    enum ArmState {
-        Extending,
-        Retracting,
-        Pivoting,
-        Holding,
-        Wrist,
 
-    }
-
-    ArmState state = ArmState.Holding;
     final double CPD = -1961.0 / 90.0;
     boolean wasCl = false;
+
     double armPivotDesiredPosition = 0;
     double armMotorDesiredPosition = 0;
 
-    double pivotStartPosDeg = armPivot.getCurrentPosition() / CPD;
+
     Ewma e = new Ewma(0.25);
     Ewma e2 = new Ewma(0.25);
 
     double clawPivotTarget = 0.9;
     double clawPivot2Target = 0.1;
     double clawRotateTarget = 0.48;
-    double armMotorPosition = armMotor.getCurrentPosition();
     final double ticksPerInchArm = 296;
     double armPositionInches = armMotorPosition / ticksPerInchArm;
-    double pivotAngleDeg = armPivot.getCurrentPosition() / CPD - pivotStartPosDeg;
     // Get the target position of the armPivot
     final double armMotorKp = 0.75;
     boolean armCl = false;
 
     final double armPivotKp = 1.0 / 20.0;
+
 
     //
     public void specimenIntake() {
