@@ -81,27 +81,24 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Sigma_Auto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initial = new Pose2d(0,0,0);
+        Pose2d initial = new Pose2d(60,38,90);
         MecanumDrive drive = new MecanumDrive(hardwareMap, initial);
+        //make arm
          //Servo servo = hardwareMap.servo.get("servo");
 
         waitForStart();
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initial)
-                //high basket score off rip
-//                .lineToX(24)
-//                .turn(Math.toRadians(135.0))
-//                .setTangent(90)
-//                .lineToY(20)
-//                .waitSeconds(5);
-                .lineToX(40)
-                .setTangent(90)
-                .lineToY(20)
-                .setTangent(0)
-                .turnTo(Math.toRadians(-180))
-                .lineToX(20);
+                .lineToX(60)
+                .setTangent(Math.toRadians(90))
+                .lineToY(5)
+                .setTangent(Math.toRadians(0))
+                .lineToX(5)
+                .waitSeconds(5);
+        //call arm methods here
         Action finish = tab1.endTrajectory().fresh().build();
+
 
 
         Actions.runBlocking(new SequentialAction(
@@ -119,9 +116,9 @@ public class Sigma_Auto extends LinearOpMode {
 //                        .lineToX(15)
                         .build());
 **/
-        Encoder par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack"))); //rightBack
-        Encoder par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront"))); //leftFront
-        Encoder perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
+//        Encoder par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack"))); //rightBack
+//        Encoder par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront"))); //leftFront
+//        Encoder perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
 
     }
 
