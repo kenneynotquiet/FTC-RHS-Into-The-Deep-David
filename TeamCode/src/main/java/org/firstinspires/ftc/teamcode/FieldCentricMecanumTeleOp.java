@@ -100,29 +100,24 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
         double clawRotateTarget = 0.48;
 
         while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y * -gamepad1.left_stick_y * -gamepad1.left_stick_y * .6; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x * gamepad1.left_stick_x * gamepad1.left_stick_x * .6;
-            double rx = gamepad1.right_stick_x * gamepad1.right_stick_x * gamepad1.right_stick_x * .75;
+            double y = -gamepad1.left_stick_y*-gamepad1.left_stick_y*-gamepad1.left_stick_y*.6; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_x*gamepad1.left_stick_x*gamepad1.left_stick_x*.6;
+            double rx = gamepad1.right_stick_x*gamepad1.right_stick_x*gamepad1.right_stick_x*.75;
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
             // The equivalent button is start on Xbox-style controllers.
             // Get the current position of the armPivot
-
-//                pivotFf = 0;
-            double armMotorError = armMotorDesiredPosition - armPositionInches;
-            armMotor.setPower(armMotorKp * armMotorError);
-            armPivot.setPower(armPivotKp * armPivotError + pivotFf);
-            armPivot2.setPdouble armMotorPosition = armMotor.getCurrentPosition();
+            double armMotorPosition = armMotor.getCurrentPosition();
             final double ticksPerInchArm = 296;
             double armPositionInches = armMotorPosition / ticksPerInchArm;
             double pivotAngleDeg = armPivot.getCurrentPosition() / CPD - pivotStartPosDeg;
             telemetry.addData("Pivot Angle", pivotAngleDeg);
             // Get the target position of the armPivot
-            armMotorKp = 0.75;
+            final double armMotorKp = 0.75;
             boolean armCl = false;
 
-            armPivotKp = 1.0 / 20.0;
+            final double armPivotKp = 1.0 / 19.0;
 
             if (gamepad1.dpad_up) {
                 climber.setPower(1.0);
@@ -151,16 +146,16 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
                 climbServo2.setPosition(.24);
 
             }
-            if (gamepad1.x) {
+            if (gamepad1.x){
                 armMotorDesiredPosition = 0;
-                armPivotDesiredPosition = 8;
+                armPivotDesiredPosition = 3;
                 clawPivotTarget = 0.85;
                 clawPivot2Target = 0.9;
                 clawRotateTarget = 1;
                 armCl = true;
             }
 
-            if (gamepad1.y) {
+            if (gamepad1.y){
                 armMotorDesiredPosition = 0;
                 armPivotDesiredPosition = 4;
                 clawPivotTarget = 0.87;
@@ -169,20 +164,19 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
 
                 armCl = true;
             }
-            //Intake Button
-            if (gamepad1.right_bumper) {
+                //Intake Button
+             if (gamepad1.right_bumper) {
                 armMotorDesiredPosition = 4;
-                armPivotDesiredPosition = 7;
+                armPivotDesiredPosition = 6;
 //                clawPivot.setPosition(.4);
 //                clawPivot2.setPosition(.44);
 //                clawRotate.setPosition(.48);
-                clawPivotTarget = 0.4;
+                clawPivotTarget = 0.37;
                 clawPivot2Target = .35;
                 clawRotateTarget = .48;
                 armCl = true;
 
-            }
-            if (gamepad2.y) {
+            }if (gamepad2.y) {
 //                armMotorDesiredPosition = 0;
 //                armPivotDesiredPosition = 45;
 //                clawPivot.setPosition(.5);
@@ -251,6 +245,8 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             }
 
 
+
+
             if (armCl && !wasCl) {
                 state = ArmState.Retracting;
             }
@@ -262,7 +258,7 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
 
             telemetry.addData("State", state);
             // if (Math.abs(error) < .1) {
-            final double pKf = 0.0;
+            final double pKf = 0.2;
             if (armCl || true) {
                 switch (state) {
                     case Holding:
@@ -306,7 +302,12 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
                 armMotorDesiredPosition = e2.calculate(armMotorDesiredPosition);
 //                if (Math.abs(armMotorDesiredPosition) > 0) {
 //                    pivotFf *= (1.0 + 1.0 / 3.0 * armMotorDesiredPosition);
-//                }ower(armPivotKp * armPivotError + pivotFf);
+//                }
+//                pivotFf = 0;
+                double armMotorError = armMotorDesiredPosition - armPositionInches;
+                armMotor.setPower(armMotorKp * armMotorError);
+                armPivot.setPower(armPivotKp * armPivotError + pivotFf);
+                armPivot2.setPower(armPivotKp * armPivotError + pivotFf);
 
             } else {
                 armMotor.setPower(0);
@@ -318,10 +319,11 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             if (gamepad1.right_trigger > 0.2) {
                 intakeGo.setPower(-1);
             } else if (gamepad1.left_trigger > 0.2) {
-                intakeGo.setPower(1);
+                    intakeGo.setPower(1);
             } else {
                 intakeGo.setPower(0);
             }
+
 
 
             // Show the position of the armMotor on telemetry
