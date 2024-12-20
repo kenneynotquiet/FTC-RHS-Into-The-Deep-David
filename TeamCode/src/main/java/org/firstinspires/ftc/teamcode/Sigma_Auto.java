@@ -96,7 +96,7 @@ public class Sigma_Auto extends LinearOpMode {
                 .setTangent(Math.toRadians(0))
                 .lineToX(5)
                 .waitSeconds(5);
-        //call arm methods here
+        //call arm methods here.
         Action finish = tab1.endTrajectory().fresh().build();
 
 
