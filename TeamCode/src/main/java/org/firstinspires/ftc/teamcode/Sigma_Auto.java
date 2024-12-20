@@ -65,7 +65,6 @@ import java.util.List;
 
 //from frield centic class
 
-import org.firstinspires.ftc.teamcode.Arm_Auto;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
