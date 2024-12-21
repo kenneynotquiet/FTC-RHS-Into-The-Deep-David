@@ -185,7 +185,7 @@ public final class Main_Arm {
         // Gamepad 2 X
     }
 
-    public void SemiStow() {
+    public void semiStow() {
         armPivotDesiredPosition = 45;
         armMotorDesiredPosition = 0;
         clawPivotTarget = 0.9;
@@ -282,6 +282,9 @@ public final class Main_Arm {
 
 
     }
+    public Main_Arm.ArmState getState() {
+        return state;
+    }
 //    public void (gamepad1.x){
 //        armMotorDesiredPosition = 0;
 //        armPivotDesiredPosition = 8;
@@ -290,7 +293,6 @@ public final class Main_Arm {
 //        clawRotateTarget = 1;
 //        armCl = true;
 }
-
 
 
 
