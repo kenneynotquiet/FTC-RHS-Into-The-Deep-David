@@ -90,7 +90,7 @@ public class Sigma_Auto extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initial)
-                //push 3 blocks into red triangle line
+                //push 3 blocks into red triangle line.
                 .lineToX(60)
                 .turn(Math.toRadians(-25))
                 .lineToX(5)
