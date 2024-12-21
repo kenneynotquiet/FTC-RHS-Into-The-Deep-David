@@ -81,7 +81,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Sigma_Auto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initial = new Pose2d(60,38,90);
+        Pose2d initial = new Pose2d(0,0, 0);
         MecanumDrive drive = new MecanumDrive(hardwareMap, initial);
         //make arm
          //Servo servo = hardwareMap.servo.get("servo");
@@ -90,12 +90,24 @@ public class Sigma_Auto extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initial)
+                //push 3 blocks into red triangle line
                 .lineToX(60)
-                .setTangent(Math.toRadians(90))
-                .lineToY(5)
-                .setTangent(Math.toRadians(0))
+                .turn(Math.toRadians(-25))
                 .lineToX(5)
-                .waitSeconds(5);
+
+                .lineToXSplineHeading(60, 0)
+                .setTangent(90)
+                .lineToY(21)
+                .setTangent(0)
+                .lineToX(5)
+
+                .waitSeconds(5)
+                .lineToXSplineHeading(60, 0)
+                .setTangent(90)
+                .lineToY(27)
+                .setTangent(0)
+                .lineToX(5)
+                ;
         //call arm methods here.
         Action finish = tab1.endTrajectory().fresh().build();
 
