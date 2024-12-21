@@ -77,6 +77,19 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
 
+//not all from ActualTeleOpV1.java
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
+import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
+
+    //importing all the subsystems
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Main_Arm;
+
 @Autonomous(name = "Sigma_Auto")
 public class Sigma_Auto extends LinearOpMode {
     @Override
@@ -84,13 +97,41 @@ public class Sigma_Auto extends LinearOpMode {
         Pose2d initial = new Pose2d(0,0, 0);
         MecanumDrive drive = new MecanumDrive(hardwareMap, initial);
         //make arm
-         //Servo servo = hardwareMap.servo.get("servo");
 
+        Main_Arm myArm = new Main_Arm(hardwareMap);
+        boolean armcl = false;
+
+
+        myArm.update(armcl);
+
+        //myArm.sampleLongIntake()
         waitForStart();
-
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder tab1 = drive.actionBuilder(initial)
-                //push 3 blocks into red triangle line.
+        TrajectoryActionBuilder pathToScoreOffRip = drive.actionBuilder(initial)
+                .lineToXSplineHeading(15, Math.toRadians(90))
+                .lineToX(25)
+                .turn(Math.toRadians(-135))
+                .lineToX(15);
+
+        //paralell action
+        Action moveToScorePositionWhileDriving = new ParallelAction(
+                new ArmToScorePosition(myArm),
+                pathToScoreOffRip.build()
+        );
+
+        Action score = new ParallelAction(
+                new ScoreAction(myArm)
+        );
+
+        Actions.runBlocking(new SequentialAction(
+                moveToScorePositionWhileDriving,
+                score
+        ));
+
+        if(isStopRequested()) return;
+
+        //push 3 blocks into red triangle line.
+        TrajectoryActionBuilder driveThreeBlocks = drive.actionBuilder(initial)
                 .lineToX(60)
                 .turn(Math.toRadians(-25))
                 .lineToX(5)
@@ -108,30 +149,6 @@ public class Sigma_Auto extends LinearOpMode {
                 .setTangent(0)
                 .lineToX(5)
                 ;
-        //call arm methods here.
-        Action finish = tab1.endTrajectory().fresh().build();
-
-
-
-        Actions.runBlocking(new SequentialAction(
-                tab1.build(),finish
-        ));
-
-        if(isStopRequested()) return;
-/**
-        Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(0, 0, 0))
-                        //high basket score off rip
-                        .lineToXSplineHeading(15, Math.toRadians(90))
-//                        .lineToX(25)
-//                        .turn(Math.toRadians(-135))
-//                        .lineToX(15)
-                        .build());
-**/
-//        Encoder par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack"))); //rightBack
-//        Encoder par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront"))); //leftFront
-//        Encoder perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
-
     }
 
     //hi,
