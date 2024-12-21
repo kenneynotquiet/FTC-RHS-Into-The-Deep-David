@@ -102,7 +102,7 @@ public class Sigma_Auto extends LinearOpMode {
         boolean armcl = false;
 
 
-        myArm.update(armcl);
+        myArm.update(armcl, telemetry);
 
         //myArm.sampleLongIntake()
         waitForStart();

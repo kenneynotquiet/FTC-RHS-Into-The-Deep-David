@@ -7,19 +7,18 @@ import com.acmerobotics.roadrunner.Action;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class normalStow implements Action {
+public class semiStow implements Action {
     private final Main_Arm arm;
     private boolean hasToldToMove = false;
     private Telemetry telemetry;
-
-    public normalStow(Main_Arm arm) {
+    public semiStow(Main_Arm arm, Telemetry telemetry) {
         this.arm = arm;
         this.telemetry = telemetry;
     }
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
         if (!hasToldToMove) {
-            arm.normalStow();
+            arm.semiStow();
             hasToldToMove = true;
         }
 

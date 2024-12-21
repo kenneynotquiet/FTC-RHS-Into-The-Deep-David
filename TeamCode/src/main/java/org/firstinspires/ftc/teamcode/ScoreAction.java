@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Main_Arm;
 import com.qualcomm.robotcore.hardware.CRServo;
 
@@ -14,8 +16,11 @@ public class ScoreAction implements Action {
     private final Main_Arm arm;
     private boolean hasToldToMove = false;
     CRServo intakeGo = hardwareMap.crservo.get("intakeGo");
+    private Telemetry telemetry;
+
     public ScoreAction(Main_Arm arm) {
         this.arm = arm;
+        this.telemetry = telemetry;
     }
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -30,7 +35,7 @@ public class ScoreAction implements Action {
             hasToldToMove = true;
         }
 
-        arm.update(true);
+        arm.update(true, telemetry);
 
         return arm.getState() != Main_Arm.ArmState.Holding;
     }
