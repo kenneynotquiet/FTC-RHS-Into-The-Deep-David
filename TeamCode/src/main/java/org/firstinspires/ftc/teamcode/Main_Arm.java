@@ -181,7 +181,19 @@ public final class Main_Arm {
         armPivotDesiredPosition = 100;
 
         armCl = true;
+        state = ArmState.Retracting;
         // Gamepad 2 X
+    }
+
+    public void SemiStow() {
+        armPivotDesiredPosition = 45;
+        armMotorDesiredPosition = 0;
+        clawPivotTarget = 0.9;
+        clawPivot2Target = 0.1;
+        clawRotateTarget = 0.48;
+
+        armCl = true;
+        state = ArmState.Retracting;
     }
 
     public void update(boolean armCl, Telemetry telemetry) {
