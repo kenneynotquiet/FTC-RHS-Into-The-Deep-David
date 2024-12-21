@@ -12,6 +12,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Drawing;
 //importing all the subsystems
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Main_Arm;
+import org.firstinspires.ftc.teamcode.FieldCentricMecanumTeleOp;
 
 
 
@@ -49,7 +51,7 @@ public class ActualTeleOpV1 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-
+        CRServo intakeGo = hardwareMap.crservo.get("intakeGo");
 
         //constants and objects
 //        Limelight3A limelight;
@@ -134,17 +136,47 @@ public class ActualTeleOpV1 extends LinearOpMode {
                         driveVectorRotated,
                         headingVel
                 ));
+
                 drive.updatePoseEstimate();
-                myArm.update(armcl);
-                if (gamepad1.x) {
-                    myArm.sampleLongIntake();
+                myArm.update(armcl, telemetry);
 
-                    // Extends Arm into Intake Position
-
-
-
+                if (gamepad1.right_trigger > 0.2) {
+                    intakeGo.setPower(-1);
+                } else if (gamepad1.left_trigger > 0.2) {
+                    intakeGo.setPower(1);
+                } else {
+                    intakeGo.setPower(0);
                 }
 
+                if (gamepad1.right_bumper) {
+                    myArm.sampleLongIntake();
+                    // Extends Arm into Intake Position
+                }
+
+                if (gamepad1.left_bumper) {
+                    myArm.specimenIntake();
+                }
+
+                if (gamepad2.left_bumper) {
+                    myArm.specimenPrep();
+                    // Prepares to score specimen
+                }
+
+                if (gamepad2.y) {
+                    myArm.scoreSampleHigh();
+                }
+
+                if (gamepad1.a) {
+                    myArm.normalStow();
+                }
+
+                if (gamepad2.b) {
+                    myArm.scoreSampleMid();
+                }
+
+                if (gamepad2.x) {
+                    myArm.specimenScore();
+                }
 
 
 //                limelight.updateRobotOrientation(headingMeasurement);
