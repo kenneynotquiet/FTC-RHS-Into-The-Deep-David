@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.Base64;
 
 import kotlin.math.UMathKt;
@@ -175,7 +178,7 @@ public final class Main_Arm {
 
     }
 
-    public void update(boolean armCl) {
+    public void update(boolean armCl, Telemetry telemetry) {
 
         if (armCl && !wasCl) {
             state = ArmState.Retracting;
@@ -232,11 +235,26 @@ public final class Main_Arm {
             armPivot.setPower(armPivotKp * armPivotError + pivotFf);
             armPivot2.setPower(armPivotKp * armPivotError + pivotFf);
 
+            telemetry.addData("Pivot Error", armPivotError);
+            telemetry.addData("armMotor Error", armMotorError);
+
         } else {
             armMotor.setPower(0);
             armPivot.setPower(pKf * Math.cos(Math.toRadians(pivotAngleDeg)));
             armPivot2.setPower(pKf * Math.cos(Math.toRadians(pivotAngleDeg)));
         }
+
+        telemetry.addData("State", state.toString());
+        telemetry.addData("armMotor Desired Position", armMotorDesiredPosition);
+        telemetry.addData("armPivot Desired Position", armPivotDesiredPosition);
+        telemetry.addData("clawPivot Position", clawPivot.getPosition());
+        telemetry.addData("clawPivot2 Position", clawPivot2.getPosition());
+        telemetry.addData("clawRotate Position", clawRotate.getPosition());
+        telemetry.addData("armMotor Encoder Position", armPositionInches);
+        telemetry.addData("armPivot Encoder Position", pivotAngleDeg);
+        telemetry.addData("armMotor Desired Position", armMotorDesiredPosition);
+        telemetry.addData("armPivot Desired Position", armPivotDesiredPosition);
+
     }
 //    public void (gamepad1.x){
 //        armMotorDesiredPosition = 0;
