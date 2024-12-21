@@ -236,6 +236,8 @@ public final class Main_Arm {
             double pivotFf = pKf * Math.cos(Math.toRadians(pivotDesiredLocal));
 
             armDesiredLocal = e2.calculate(armDesiredLocal);
+
+            // just for push!!!
 //                if (Math.abs(armMotorDesiredPosition) > 0) {
 //                    pivotFf *= (1.0 + 1.0 / 3.0 * armMotorDesiredPosition);
 //                }
